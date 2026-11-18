@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ff1493">
+
+    <title>Calcinhas | Explicita Moda Íntima</title>
+    <meta name="description" content="Confira nossa coleção de calcinhas na Explicita Moda Íntima.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="top-bar">
+        💗 Bem-vinda à Explicita Moda Íntima! Confira nossas novidades.
+    </div>
+
+    <header class="header">
+
+        <a href="index.html" class="logo">
+            <h1>EXPLÍCITA</h1>
+            <span>MODA ÍNTIMA & MAKE</span>
+        </a>
+
+        <nav class="navigation">
+            <a href="index.html">Início</a>
+
+            <div class="dropdown">
+                <a href="lingerie.html">Moda Íntima ▾</a>
+
+                <div class="dropdown-menu">
+                    <a href="lingerie.html">Lingerie</a>
+                    <a href="calcinhas.html">Calcinhas</a>
+                    <a href="plus-size.html">Plus Size</a>
+                    <a href="sutias.html">Sutiãs</a>
+                    <a href="cuecas.html">Cuecas</a>
+                    <a href="meias.html">Meias</a>
+                    <a href="camisolas.html">Camisolas</a>
+                    <a href="baby-doll.html">Baby-doll</a>
+                </div>
+            </div>
+
+            <a href="acessorios.html">Acessórios</a>
+            <a href="maquiagem.html">Make</a>
+            <a href="skincare.html">Skin Care</a>
+        </nav>
+
+        <button class="cart-button" id="abrir-carrinho" type="button">
+            🛍️ Carrinho
+            <span id="quantidade-carrinho">0</span>
+        </button>
+
+    </header>
+
+    <main>
+
+        <section class="featured-section">
+
+            <div class="section-heading">
+                <span>CONFORTO E BELEZA</span>
+                <h2>Nossa coleção de Calcinhas</h2>
+                <p>Modelos para todos os estilos e momentos. 💗</p>
+            </div>
+
+            <div class="product-grid" id="lista-produtos"></div>
+
+        </section>
+
+    </main>
+
+    <footer class="footer">
+
+        <div class="footer-logo">
+            <h2>EXPLÍCITA</h2>
+            <span>MODA ÍNTIMA & MAKE</span>
+        </div>
+
+        <p>Moda, beleza e autoestima em um só lugar. 💗</p>
+        <p>© 2026 Explicita Moda Íntima. Todos os direitos reservados.</p>
+
+        <a href="index.html">Voltar para a página inicial</a>
+
+    </footer>
+
+    <!-- CARRINHO -->
+    <div class="cart-overlay" id="carrinho-overlay">
+
+        <div class="cart-content">
+
+            <div class="cart-header">
+                <h2>Meu Carrinho 🛍️</h2>
+                <button id="fechar-carrinho" type="button">✕</button>
+            </div>
+
+            <div id="itens-carrinho">
+                <p>Seu carrinho está vazio.</p>
+            </div>
+
+            <div class="cart-footer">
+                <h3>
+                    Total:
+                    <span id="total-carrinho">R$ 0,00</span>
+                </h3>
+
+                <button id="finalizar-compra" type="button">
+                    Finalizar compra
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CHECKOUT -->
+    <section class="checkout-overlay" id="tela-checkout">
+
+        <div class="checkout-content">
+
+            <div class="checkout-header">
+                <h2>Finalizar Pedido 💗</h2>
+                <button id="voltar-carrinho" type="button">✕</button>
+            </div>
+
+            <p>Checkout demonstrativo. Não informe dados pessoais reais.</p>
+
+            <form id="form-checkout">
+
+                <label for="cliente-nome">Nome</label>
+                <input id="cliente-nome" type="text" placeholder="Nome de demonstração" required>
+
+                <div class="pix-option">
+                    <h3>💗 Pagamento via Pix</h3>
+                    <p>O pagamento estará disponível em breve. Esta é apenas uma demonstração.</p>
+                </div>
+
+                <h3>
+                    Total do pedido:
+                    <span id="checkout-total">R$ 0,00</span>
+                </h3>
+
+                <button type="submit" class="checkout-button">
+                    Visualizar pedido
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
