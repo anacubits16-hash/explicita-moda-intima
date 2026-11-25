@@ -4,11 +4,12 @@
    SISTEMA DA LOJA
 ========================================= */
 
+
 // =========================================
-// CADASTRO DOS PRODUTOS
+// CADASTRO E CARREGAMENTO DOS PRODUTOS
 // =========================================
 
-const produtos = [
+let produtos = JSON.parse(localStorage.getItem("produtos")) || [
     { id: 1, nome: "Conjunto de Lingerie Rendado", categoria: "Lingerie", preco: 89.90, imagem: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=600" },
     { id: 2, nome: "Conjunto Lingerie Delicado", categoria: "Lingerie", preco: 79.90, imagem: "https://images.unsplash.com/photo-1589310243389-96a5483213a8?w=600" },
     { id: 3, nome: "Calcinha Confort", categoria: "Calcinhas", preco: 19.90, imagem: "https://images.unsplash.com/photo-1583846783214-7229a91b20ed?w=600" },
@@ -32,6 +33,18 @@ const produtos = [
     { id: 21, nome: "Kit Skin Care", categoria: "Skin Care", preco: 69.90, imagem: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600" },
     { id: 22, nome: "Kit Maquiagem", categoria: "Maquiagem", preco: 89.90, imagem: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600" }
 ];
+
+// Preparar o estoque sem apagar quantidades existentes
+produtos = produtos.map(produto => ({
+    ...produto,
+    estoque: Number.isFinite(Number(produto.estoque))
+        ? Number(produto.estoque)
+        : 0
+}));
+
+// Salvar a lista atualizada
+localStorage.setItem("produtos", JSON.stringify(produtos));
+
 
 // =========================================
 // CONFIGURAÇÕES
@@ -93,6 +106,9 @@ const paginasCategorias = {
 
 const categoriasDaPagina = paginasCategorias[nomeArquivo] || null;
 
+console.log("Página atual:", nomeArquivo);
+console.log("Categoria identificada:", categoriasDaPagina);
+
 // =========================================
 // MOSTRAR PRODUTOS
 // =========================================
@@ -106,18 +122,22 @@ function mostrarProdutos() {
 
     let produtosDaPagina = produtos;
 
-    if (categoriasDaPagina) {
-        produtosDaPagina = produtos.filter(produto =>
-            categoriasDaPagina.includes(produto.categoria)
-        );
-    } else if (nomeArquivo === "" || nomeArquivo === "index.html") {
-        produtosDaPagina = produtos.slice(0, 8);
-    }
-
-    const produtosFiltrados = produtosDaPagina.filter(produto =>
-        produto.nome.toLowerCase().includes(termo) ||
-        produto.categoria.toLowerCase().includes(termo)
+if (categoriasDaPagina) {
+    produtosDaPagina = produtos.filter(produto =>
+        categoriasDaPagina.some(categoria =>
+            String(categoria).trim().toLowerCase() ===
+            String(produto.categoria || "").trim().toLowerCase()
+        )
     );
+
+} else if (nomeArquivo === "" || nomeArquivo === "index.html") {
+    produtosDaPagina = produtos;
+}
+
+const produtosFiltrados = produtosDaPagina.filter(produto =>
+    (produto.nome || "").toLowerCase().includes(termo) ||
+    (produto.categoria || "").toLowerCase().includes(termo)
+);
 
     if (produtosFiltrados.length === 0) {
         listaProdutos.innerHTML = "<p>Nenhum produto encontrado.</p>";
@@ -126,11 +146,12 @@ function mostrarProdutos() {
 
     listaProdutos.innerHTML = produtosFiltrados.map(produto => `
         <article class="product-card">
-            <img
-                src="${produto.imagem}"
-                alt="${produto.nome}"
-                loading="lazy"
-            >
+<img
+    src="${produto.imagem || 'imagens/sem-foto.png'}"
+    alt="${produto.nome}"
+    loading="lazy"
+    onerror="this.src='imagens/sem-foto.png'"
+>
 
             <div class="product-info">
                 <span class="product-category">${produto.categoria}</span>
@@ -139,14 +160,22 @@ function mostrarProdutos() {
                 <p class="product-price">
                     ${formatarPreco(produto.preco)}
                 </p>
+                <p class="product-stock">
+    ${Number(produto.estoque) > 0
+        ? `${produto.estoque} unidades disponíveis`
+        : "Produto indisponível"}
+</p>
 
-                <button
-                    class="product-button"
-                    type="button"
-                    data-add="${produto.id}"
-                >
-                    Adicionar ao carrinho
-                </button>
+<button
+    class="product-button"
+    type="button"
+    data-add="${produto.id}"
+    ${Number(produto.estoque) <= 0 ? "disabled" : ""}
+>
+    ${Number(produto.estoque) > 0
+        ? "Adicionar ao carrinho"
+        : "Indisponível"}
+</button>
             </div>
         </article>
     `).join("");
@@ -186,16 +215,27 @@ function salvarCarrinho() {
 // ADICIONAR PRODUTO
 // =========================================
 
+
 function adicionarCarrinho(id) {
     const produto = produtos.find(item => item.id === id);
 
     if (!produto) return;
+
+    const quantidadeNoCarrinho = carrinho.filter(
+        item => item.id === id
+    ).length;
+
+    if (quantidadeNoCarrinho >= Number(produto.estoque)) {
+        alert("Desculpe! Não temos mais unidades disponíveis desse produto.");
+        return;
+    }
 
     carrinho.push(produto);
     atualizarCarrinho();
 
     alert(produto.nome + " foi adicionado ao carrinho! 💗");
 }
+
 
 // =========================================
 // ATUALIZAR CARRINHO
@@ -233,12 +273,14 @@ function atualizarCarrinho() {
                 <p>${formatarPreco(produto.preco)}</p>
             </div>
 
-            <button
-                type="button"
-                data-remove="${indice}"
-            >
-                Remover
-            </button>
+
+<button
+    type="button"
+    data-remove="${indice}"
+>
+    Remover
+</button>
+
         </div>
     `).join("");
 }
@@ -342,15 +384,25 @@ if (botaoFinalizarCompra) {
             return `• ${produto.quantidade}x ${produto.nome} — ${formatarPreco(subtotal)}`;
         });
 
-        const mensagem =
-            "Olá! 💗 Quero fazer um pedido na Explícita Moda Íntima.\n\n" +
-            "🛍️ *Meu pedido:*\n" +
-            linhasProdutos.join("\n") +
-            "\n\n*Total: " + formatarPreco(total) + "*\n\n" +
-            "Gostaria de confirmar a disponibilidade dos produtos. Obrigada!";
 
-        const linkWhatsApp =
-            `https://wa.me/${WHATSAPP_LOJA}?text=${encodeURIComponent(mensagem)}`;
+
+const mensagem =
+    "OLA! Seja bem-vinda a EXPLICITA MODA INTIMA!\n\n" +
+    "Recebemos seu pedido e teremos prazer em atende-la.\n\n" +
+    "RESUMO DO PEDIDO\n" +
+    "------------------------------\n\n" +
+    linhasProdutos.join("\n\n") +
+    "\n\n------------------------------\n" +
+    "TOTAL DO PEDIDO: " + formatarPreco(total) +
+    "\n\n" +
+    "Poderia confirmar a disponibilidade dos produtos e as opcoes de entrega?\n\n" +
+    "Aguardamos seu contato!\n" +
+    "EXPLICITA MODA INTIMA";
+
+const linkWhatsApp =
+    `https://wa.me/${WHATSAPP_LOJA}?text=${encodeURIComponent(mensagem)}`;
+
+
 
         window.open(linkWhatsApp, "_blank");
 
@@ -364,5 +416,260 @@ if (botaoFinalizarCompra) {
 // INICIAR LOJA
 // =========================================
 
+// =========================================
+// PAINEL ADMINISTRATIVO
+// =========================================
+// =========================================
+// PAINEL ADMINISTRATIVO
+// =========================================
+
+const formularioProduto = document.getElementById("form-produto");
+console.log("Formulário encontrado:", formularioProduto);
+const listaAdminProdutos = document.getElementById("lista-admin-produtos");
+const campoImagem = document.getElementById("produto-imagem");
+const previewImagem = document.getElementById("preview-imagem");
+
+// Mostrar prévia da foto escolhida
+campoImagem?.addEventListener("change", function() {
+    const arquivo = this.files[0];
+
+    if (!arquivo) {
+        previewImagem.innerHTML = "";
+        return;
+    }
+
+    const leitor = new FileReader();
+
+    leitor.onload = function(event) {
+        previewImagem.innerHTML = `
+            <img src="${event.target.result}"
+                 style="width:150px; height:150px; object-fit:cover; border-radius:10px;">
+        `;
+    };
+
+    leitor.readAsDataURL(arquivo);
+});
+
+function mostrarProdutosAdmin() {
+    if (!listaAdminProdutos) return;
+
+    listaAdminProdutos.innerHTML = "";
+
+    produtos.forEach((produto, indice) => {
+        const item = document.createElement("div");
+
+        item.style.padding = "10px";
+        item.style.borderBottom = "1px solid #ddd";
+
+        item.innerHTML = `
+            <strong>${produto.nome}</strong>
+            <p>${produto.categoria} - ${formatarPreco(produto.preco)}</p>
+
+            <button type="button" onclick="editarProdutoPorIndice(${indice})">
+                Editar
+            </button>
+
+            <button type="button" onclick="excluirProdutoPorIndice(${indice})">
+                Excluir
+            </button>
+        `;
+
+        listaAdminProdutos.appendChild(item);
+    });
+}
+
+function salvarProduto(id, nome, categoria, preco, imagem) {
+    console.log("Salvando produto:", nome, categoria, preco);
+
+    if (id) {
+        const produto = produtos.find(p => p.id === Number(id));
+
+        if (produto) {
+            Object.assign(produto, {
+                nome,
+                categoria,
+                preco,
+                imagem
+            });
+        }
+    } else {
+        produtos.push({
+            id: Math.max(0, ...produtos.map(p => p.id)) + 1,
+            nome,
+            categoria,
+            preco,
+            imagem
+        });
+    }
+
+    formularioProduto.reset();
+    document.getElementById("produto-id").value = "";
+    previewImagem.innerHTML = "";
+
+    localStorage.setItem("produtos", JSON.stringify(produtos));
+
+    mostrarProdutos();
+    mostrarProdutosAdmin();
+
+}
+
+formularioProduto?.addEventListener("submit", function(event) {
+    console.log("FORMULÁRIO ENVIADO!");
+    event.preventDefault();
+
+    const id = document.getElementById("produto-id").value;
+    const nome = document.getElementById("produto-nome").value.trim();
+    const categoria = document.getElementById("produto-categoria").value.trim();
+    const preco = Number(document.getElementById("produto-preco").value);
+    const arquivoImagem = campoImagem.files[0];
+
+    if (!nome || !categoria || !Number.isFinite(preco) || preco <= 0) {
+        alert("Preencha todos os campos corretamente.");
+        return;
+    }
+
+    const produtoExistente = produtos.find(p => p.id === Number(id));
+    const imagemAtual = produtoExistente?.imagem;
+
+    if (arquivoImagem) {
+        if (arquivoImagem.size > 2 * 1024 * 1024) {
+            alert("A imagem deve ter no máximo 2 MB.");
+            return;
+        }
+
+        const leitor = new FileReader();
+
+        leitor.onload = function(event) {
+            salvarProduto(id, nome, categoria, preco, event.target.result);
+        };
+
+        leitor.readAsDataURL(arquivoImagem);
+        return;
+    }
+
+    if (imagemAtual) {
+        salvarProduto(id, nome, categoria, preco, imagemAtual);
+        return;
+    }
+
+    alert("Escolha uma foto para o produto.");
+});
+
+window.editarProduto = function(id) {
+    const produto = produtos.find(p => p.id === id);
+    if (!produto) return;
+
+    document.getElementById("produto-id").value = produto.id;
+    document.getElementById("produto-nome").value = produto.nome;
+    document.getElementById("produto-categoria").value = produto.categoria;
+    document.getElementById("produto-preco").value = produto.preco;
+
+    campoImagem.value = "";
+
+    previewImagem.innerHTML = `
+        <p>Foto atual:</p>
+        <img src="${produto.imagem}"
+             style="width:150px; border-radius:10px;">
+    `;
+
+    formularioProduto.scrollIntoView({ behavior: "smooth" });
+};
+
+window.excluirProduto = function(id) {
+    if (!confirm("Deseja realmente excluir este produto?")) return;
+
+    const indice = produtos.findIndex(p =>
+        String(p.id) === String(id)
+    );
+
+    if (indice === -1) {
+        alert("Não foi possível localizar este produto.");
+        return;
+    }
+
+    produtos.splice(indice, 1);
+
+    localStorage.setItem("produtos", JSON.stringify(produtos));
+
+    mostrarProdutos();
+    mostrarProdutosAdmin();
+
+    alert("Produto excluído com sucesso! 💗");
+};
+window.excluirProdutoPorIndice = function(indice) {
+    if (!confirm("Deseja realmente excluir este produto?")) return;
+
+    if (indice < 0 || indice >= produtos.length) return;
+
+    produtos.splice(indice, 1);
+
+    localStorage.setItem("produtos", JSON.stringify(produtos));
+
+    mostrarProdutos();
+    mostrarProdutosAdmin();
+
+    alert("Produto excluído com sucesso! 💗");
+};
+
+window.editarProdutoPorIndice = function(indice) {
+    const produto = produtos[indice];
+
+    if (!produto) return;
+
+    document.getElementById("produto-id").value = produto.id || "";
+    document.getElementById("produto-nome").value = produto.nome || "";
+    document.getElementById("produto-categoria").value = produto.categoria || "";
+    document.getElementById("produto-preco").value = produto.preco || "";
+
+    campoImagem.value = "";
+
+    previewImagem.innerHTML = `
+        <p>Foto atual:</p>
+        <img src="${produto.imagem || ''}" style="width:150px; border-radius:10px;">
+    `;
+
+    formularioProduto.scrollIntoView({ behavior: "smooth" });
+};
+
+document.getElementById("limpar-formulario")?.addEventListener("click", () => {
+    formularioProduto.reset();
+    document.getElementById("produto-id").value = "";
+});
+
+document.getElementById("exportar-produtos")?.addEventListener("click", () => {
+
+    const conteudo =
+        "const produtos = " +
+        JSON.stringify(produtos, null, 4) +
+        ";";
+
+    const arquivo = new Blob(
+        [conteudo],
+        { type: "text/javascript;charset=utf-8" }
+    );
+
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(arquivo);
+
+    link.href = url;
+    link.download = "produtos-atualizados.js";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    alert("Catálogo exportado! Guarde o arquivo para atualizar sua loja.");
+});
+
+// =========================================
+// INICIAR LOJA
+// =========================================
+
+
+
 mostrarProdutos();
 atualizarCarrinho();
+mostrarProdutosAdmin();
+

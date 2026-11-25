@@ -1,0 +1,422 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo | Explícita</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="pagina-admin">
+
+    <!-- LOGIN -->
+    <main class="admin-container">
+
+        <section id="tela-login" class="login-container">
+            <div class="login-logo">
+                <h1>EXPLÍCITA</h1>
+                <p>GESTÃO DA LOJA</p>
+            </div>
+
+            <h2>Acesso ao sistema</h2>
+            <p>Entre com seus dados para continuar.</p>
+
+            <form id="form-login">
+                <div class="campo-admin">
+                    <label for="login-email">E-mail</label>
+                    <input type="email" id="login-email"
+                        placeholder="Digite seu e-mail" required>
+                </div>
+
+                <div class="campo-admin">
+                    <label for="login-senha">Senha</label>
+                    <input type="password" id="login-senha"
+                        placeholder="Digite sua senha" required>
+                </div>
+
+                <button type="submit">Entrar no sistema</button>
+                <p id="mensagem-login"></p>
+            </form>
+        </section>
+
+
+        <!-- SISTEMA ADMINISTRATIVO -->
+        <section id="painel-admin" style="display:none;">
+
+            <div class="layout-admin">
+
+                <!-- MENU LATERAL -->
+                <aside class="sidebar-admin">
+
+                    <div class="sidebar-logo">
+                        <h1>EXPLÍCITA</h1>
+                        <span>PAINEL DE GESTÃO</span>
+                    </div>
+
+                    <div class="sidebar-label">MENU PRINCIPAL</div>
+
+                    <nav class="admin-menu">
+
+                        <button type="button"
+                            data-painel="estoque"
+                            class="menu-ativo">
+                            <span>▦</span> Visão geral e estoque
+                        </button>
+
+                        <button type="button"
+                            data-painel="retiradas">
+                            <span>▤</span> Vendas e retiradas
+                        </button>
+
+                        <button type="button"
+                            data-painel="historico">
+                            <span>◷</span> Histórico
+                        </button>
+
+                    </nav>
+
+                    <div class="sidebar-footer">
+                        <span>EXPLÍCITA MODA ÍNTIMA</span>
+                        <small>Sistema de gestão</small>
+                    </div>
+
+                </aside>
+
+
+                <!-- CONTEÚDO PRINCIPAL -->
+                <div class="conteudo-admin">
+
+                    <!-- CABEÇALHO -->
+                    <header class="topbar-admin">
+
+                        <div>
+                            <span class="topbar-subtitulo">
+                                PAINEL ADMINISTRATIVO
+                            </span>
+                            <h2>Gestão da loja</h2>
+                        </div>
+
+                        <button type="button" id="sair-admin">
+                            Sair do sistema
+                        </button>
+
+                    </header>
+
+
+                    <!-- ESTOQUE -->
+                    <section id="painel-estoque" class="painel-conteudo">
+
+                        <!-- CADASTRO DE PRODUTOS -->
+<div class="bloco-admin">
+
+    <div class="bloco-cabecalho">
+        <div>
+            <h3>Cadastrar novo produto</h3>
+            <p>Adicione produtos ao catálogo da loja.</p>
+        </div>
+    </div>
+
+    <form id="form-cadastro-produto">
+
+        <div class="form-grid">
+
+            <div class="campo-admin">
+                <label for="cadastro-produto-nome">Nome do produto</label>
+                <input type="text" id="cadastro-produto-nome" required>
+            </div>
+
+            <div class="campo-admin">
+                <label for="cadastro-produto-categoria">Categoria</label>
+                <select id="cadastro-produto-categoria" required>
+                    <option value="">Selecione uma categoria</option>
+                    <option value="Lingerie">Lingerie</option>
+                    <option value="Calcinhas">Calcinhas</option>
+                    <option value="Plus Size">Plus Size</option>
+                    <option value="Sutiãs">Sutiãs</option>
+                    <option value="Cuecas">Cuecas</option>
+                    <option value="Meias">Meias</option>
+                    <option value="Camisolas">Camisolas</option>
+                    <option value="Baby-doll">Baby-doll</option>
+                    <option value="Brincos">Brincos</option>
+                    <option value="Colares">Colares</option>
+                    <option value="Pulseiras">Pulseiras</option>
+                    <option value="Outros acessórios">Outros acessórios</option>
+                    <option value="Maquiagem">Maquiagem</option>
+                    <option value="Skin Care">Skin Care</option>
+                </select>
+            </div>
+
+            <div class="campo-admin">
+                <label for="cadastro-produto-preco">Preço</label>
+                <input type="number" id="cadastro-produto-preco"
+                    min="0.01" step="0.01" required>
+            </div>
+
+            <div class="campo-admin">
+                <label for="cadastro-produto-imagem">Foto do produto</label>
+                <input type="file" id="cadastro-produto-imagem"
+                    accept="image/*" required>
+            </div>
+
+        </div>
+
+        <div id="cadastro-preview-imagem"></div>
+
+        <button type="submit">Cadastrar produto</button>
+
+    </form>
+
+</div>
+
+                        <div class="titulo-pagina">
+                            <div>
+                                <h2>Visão geral</h2>
+                                <p>Acompanhe os indicadores e o estoque da loja.</p>
+                            </div>
+                        </div>
+
+
+                        <!-- INDICADORES -->
+                        <div class="resumo-estoque">
+
+                            <div class="card-resumo">
+                                <span>PRODUTOS CADASTRADOS</span>
+                                <p id="total-produtos">0</p>
+                                <small>Total de produtos</small>
+                            </div>
+
+                            <div class="card-resumo">
+                                <span>UNIDADES EM ESTOQUE</span>
+                                <p id="total-unidades">0</p>
+                                <small>Quantidade disponível</small>
+                            </div>
+
+                            <div class="card-resumo">
+                                <span>ESTOQUE BAIXO</span>
+                                <p id="produtos-estoque-baixo">0</p>
+                                <small>Produtos com até 5 unidades</small>
+                            </div>
+
+                        </div>
+
+
+                        <!-- LISTAGEM DE PRODUTOS -->
+                        <div class="bloco-admin">
+
+                            <div class="bloco-cabecalho">
+                                <div>
+                                    <h3>Controle de estoque</h3>
+                                    <p>Consulte os produtos e suas quantidades.</p>
+                                </div>
+                            </div>
+
+                            <div id="lista-estoque"></div>
+
+                        </div>
+
+
+                        <!-- ENTRADA DE MERCADORIAS -->
+                        <div class="bloco-admin">
+
+                            <div class="bloco-cabecalho">
+                                <div>
+                                    <h3>Entrada de mercadorias</h3>
+                                    <p>Registre os produtos recebidos pela loja.</p>
+                                </div>
+                            </div>
+
+                            <form id="form-entrada">
+
+                                <div class="form-grid">
+
+                                    <div class="campo-admin">
+                                        <label for="entrada-produto">
+                                            Produto recebido
+                                        </label>
+
+                                        <select id="entrada-produto" required>
+                                            <option value="">
+                                                Selecione um produto
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="campo-admin">
+                                        <label for="entrada-quantidade">
+                                            Quantidade recebida
+                                        </label>
+
+                                        <input type="number"
+                                            id="entrada-quantidade"
+                                            min="1" required>
+                                    </div>
+
+                                    <div class="campo-admin campo-largo">
+                                        <label for="entrada-responsavel">
+                                            Responsável pelo registro
+                                        </label>
+
+                                        <input type="text"
+                                            id="entrada-responsavel"
+                                            placeholder="Nome de quem registrou"
+                                            required>
+                                    </div>
+
+                                </div>
+
+                                <button type="submit">
+                                    Registrar entrada
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- VENDAS E RETIRADAS -->
+                    <section id="painel-retiradas"
+                        class="painel-conteudo" style="display:none;">
+
+                        <div class="titulo-pagina">
+                            <div>
+                                <h2>Vendas e retiradas</h2>
+                                <p>Registre as saídas de produtos da loja.</p>
+                            </div>
+                        </div>
+
+                        <div class="bloco-admin">
+
+                            <div class="bloco-cabecalho">
+                                <div>
+                                    <h3>Produtos da venda</h3>
+                                    <p>Adicione todos os produtos e quantidades.</p>
+                                </div>
+                            </div>
+
+                            <form id="form-retirada">
+
+                                <div class="form-grid">
+
+                                    <div class="campo-admin">
+                                        <label for="retirada-produto">
+                                            Produto
+                                        </label>
+
+                                        <select id="retirada-produto" required>
+                                            <option value="">
+                                                Selecione um produto
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="campo-admin">
+                                        <label for="retirada-quantidade">
+                                            Quantidade
+                                        </label>
+
+                                        <input type="number"
+                                            id="retirada-quantidade"
+                                            min="1" value="1" required>
+                                    </div>
+
+                                </div>
+
+                                <button type="button"
+                                    id="adicionar-item-retirada"
+                                    class="botao-secundario">
+                                    + Adicionar produto
+                                </button>
+
+                                <div id="retirada-itens-adicionados">
+                                    <p>Nenhum produto adicionado ainda.</p>
+                                </div>
+
+                                <hr>
+
+                                <div class="bloco-cabecalho">
+                                    <div>
+                                        <h3>Dados da venda</h3>
+                                        <p>Informe os dados da cliente e da responsável.</p>
+                                    </div>
+                                </div>
+
+                                <div class="form-grid">
+
+                                    <div class="campo-admin">
+                                        <label for="retirada-responsavel">
+                                            Funcionária responsável
+                                        </label>
+
+                                        <input type="text"
+                                            id="retirada-responsavel"
+                                            placeholder="Nome da funcionária"
+                                            required>
+                                    </div>
+
+                                    <div class="campo-admin">
+                                        <label for="retirada-cliente">
+                                            Nome da cliente
+                                        </label>
+
+                                        <input type="text"
+                                            id="retirada-cliente"
+                                            placeholder="Nome da cliente"
+                                            required>
+                                    </div>
+
+                                    <div class="campo-admin campo-largo">
+                                        <label for="retirada-whatsapp">
+                                            WhatsApp da cliente
+                                        </label>
+
+                                        <input type="tel"
+                                            id="retirada-whatsapp"
+                                            placeholder="(00) 00000-0000"
+                                            required>
+                                    </div>
+
+                                </div>
+
+                                <button type="submit">
+                                    Confirmar venda e atualizar estoque
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- HISTÓRICO -->
+                    <section id="painel-historico"
+                        class="painel-conteudo" style="display:none;">
+
+                        <div class="titulo-pagina">
+                            <div>
+                                <h2>Histórico de movimentações</h2>
+                                <p>Consulte as entradas e saídas registradas.</p>
+                            </div>
+                        </div>
+
+                        <div class="bloco-admin">
+                            <div id="lista-historico"></div>
+                        </div>
+
+                    </section>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="admin.js"></script>
+
+</body>
+</html>
